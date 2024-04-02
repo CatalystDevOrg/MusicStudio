@@ -22,50 +22,37 @@ var PROD = JSON.parse(process.env.PROD_ENV || '0');
 module.exports = {
 	"context": __dirname,
 	entry: {
-		"Main": "./app/Main",
+		"Main": "app/Main",
 	},
 	output: {
 		filename: "./build/[name].js",
 		chunkFilename: "./build/[id].js",
-		sourceMapFilename: "[file].map",
+		sourceMapFilename : "[file].map",
 	},
 	resolve: {
-		alias: {
-			Tone: path.resolve(__dirname, 'app/third_party/Tone.js/'),
-			Style: path.resolve(__dirname, 'style/'),
-			App: path.resolve(__dirname, 'app/'),
-			Node: path.resolve(__dirname, 'node_modules'),
-			ThirdParty: path.resolve(__dirname, 'third_party/'),
-		},	
+		root: __dirname,
+		modulesDirectories : ["style", "app", "third_party/Tone.js/", "third_party", "node_modules"],
 	},
 	plugins: PROD ? [
-		new webpack.optimize.UglifyJsPlugin({ minimize: true })
-	] : [],
-	module: {
-		rules: [
+	    new webpack.optimize.UglifyJsPlugin({minimize: true})
+	  ] : [],
+	 module: {
+		loaders: [
 			{
 				test: /\.scss$/,
-				use: [
-					{ loader: 'autoprefix-loader' },
-				]
+				loader: "style!css!autoprefixer-loader!sass"
 			},
 			{
 				test: /\.json$/,
-				use: [
-					{ loader: 'json' },
-				]
+				loader: "json"
 			},
 			{
 				test: /\.(png|gif)$/,
-				use: [
-					{ loader: 'url-loader' }
-				]
-			},
+				loader: "url-loader",
+			}, 
 			{
-				test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
-				use: [
-					{ loader: 'file-loader?name=images/font/[hash].[ext]' }
-				]
+				test   : /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+				loader : "file-loader?name=images/font/[hash].[ext]"
 			}
 		]
 	}
